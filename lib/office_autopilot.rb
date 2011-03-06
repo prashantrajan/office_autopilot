@@ -1,0 +1,3 @@
+module OfficeAutopilot
+  # Your code goes here...
+end
