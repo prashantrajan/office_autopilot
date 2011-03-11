@@ -4,6 +4,7 @@ require "office_autopilot/version"
 
 Gem::Specification.new do |s|
 
+  s.add_development_dependency('rake', '~> 0.8')
   s.add_development_dependency('rspec', '~> 2.5')
   s.add_development_dependency('webmock', '~> 1.6')
 
@@ -11,15 +12,14 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency('builder', '~> 3.0')
   s.add_runtime_dependency('nokogiri', '~> 1.4')
 
-
   s.name        = "office_autopilot"
   s.version     = OfficeAutopilot::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["TODO: Write your name"]
-  s.email       = ["TODO: Write your email address"]
-  s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.authors     = ["Prashant Nadarajan"]
+  s.email       = ["prashant.nadarajan@gmail.com"]
+  s.homepage    = "https://github.com/prashantrajan/office_autopilot"
+  s.summary     = %q{Ruby wrapper for the OfficeAutopilot API}
+  s.description = %q{A Ruby wrapper for the OfficeAutopilot API}
 
   s.rubyforge_project = "office_autopilot"
 

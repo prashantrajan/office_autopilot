@@ -25,7 +25,7 @@ describe OfficeAutopilot::Client::Contacts do
   describe "#contacts_search" do
     context "when the results contain one user" do
       it "returns an array containing the contact" do
-        search_params = {:field => 'E-Mail', :op => 'c', :value => ''}
+        search_params = {:field => 'E-Mail', :op => 'e', :value => 'prashant@example.com'}
         xml_request = @client.xml_for_search(search_params)
         xml_response = test_data('contacts_search_single_response.xml')
 
@@ -40,6 +40,7 @@ describe OfficeAutopilot::Client::Contacts do
           contact[:id].should == xml_contacts[index][:id]
           contact[:first_name].should == xml_contacts[index][:first_name]
           contact[:last_name].should == xml_contacts[index][:last_name]
+          contact[:email].should == xml_contacts[index][:email]
         end
       end
     end
@@ -61,6 +62,7 @@ describe OfficeAutopilot::Client::Contacts do
           contact[:id].should == xml_contacts[index][:id]
           contact[:first_name].should == xml_contacts[index][:first_name]
           contact[:last_name].should == xml_contacts[index][:last_name]
+          contact[:email].should == xml_contacts[index][:email]
         end
       end
     end
