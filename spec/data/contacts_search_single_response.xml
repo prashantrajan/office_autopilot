@@ -1,0 +1,68 @@
+<result>
+  <contact id='7' date='1299671887' dlm='1299674450' score='0.00' purl='prashant' bulk_mail='1'>
+    <Group_Tag name='Contact Information'>
+      <field name="First Name">prashant</field>
+      <field name="Last Name">nadarajan</field>
+      <field name="E-Mail">prashant@example.com</field>
+      <field name="Home Phone"/>
+      <field name="Title"/>
+      <field name="Office Phone"/>
+      <field name="Cell Phone"/>
+      <field name="Fax"/>
+      <field name="Address"/>
+      <field name="Company"/>
+      <field name="Address 2"/>
+      <field name="City"/>
+      <field name="State"/>
+      <field name="Zip Code"/>
+      <field name="Website "/>
+      <field name="Country"/>
+      <field name="Birthday"/>
+    </Group_Tag>
+    <Group_Tag name='Lead Information'>
+      <field name="Contact Owner">Don Corleone</field>
+      <field name="First Referrer"/>
+      <field name="Last Referrer"/>
+      <field name="Lead Source"/>
+      <field name="Campaign"/>
+      <field name="Ad"/>
+      <field name="Media"/>
+    </Group_Tag>
+    <Group_Tag name='Sequences and Tags'>
+      <field name="Sequences">*/*</field>
+      <field name="Contact Tags"/>
+    </Group_Tag>
+    <Group_Tag name='Purchase History'></Group_Tag>
+    <Group_Tag name='Most Recent Charge'>
+      <field name="Charge Amount">$0.00</field>
+      <field name="Charge Invoice #"/>
+    </Group_Tag>
+    <Group_Tag name='Affiliate Data'>
+      <field name="Affiliate Program"/>
+      <field name="Number of Sales"/>
+      <field name="$ Sales">$0.00</field>
+      <field name="Paypal E-mail"/>
+      <field name="Affiliate Paypal"/>
+    </Group_Tag>
+    <Group_Tag
+        name='Most Recent Invoice'>
+      <field name="Invoice #"/>
+      <field name="Total Invoice Amount">$0.00</field>
+    </Group_Tag>
+    <Group_Tag name='Lead Status'>
+      <field name="Lead Status"/>
+      <field name="Preferencia Contacto"/>
+    </Group_Tag>
+    <Group_Tag name='Credit Card'>
+      <field name="Card Type"/>
+      <field name="Card Expiration Month"/>
+      <field name="Charge Result"/>
+      <field name="Card Expiration Year"/>
+      <field name="Card Number (Last 4)"/>
+      <field name="Payment Center Link"/>
+    </Group_Tag>
+    <Group_Tag name='Invoices'></Group_Tag>
+    <Group_Tag name='Subscriptions and Payment Plans'></Group_Tag>
+    <Group_Tag name='Website Subscribers'></Group_Tag>
+  </contact>
+</result>

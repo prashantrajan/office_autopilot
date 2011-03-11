@@ -1,3 +1,1 @@
-module OfficeAutopilot
-  # Your code goes here...
-end
+require 'office_autopilot/client'

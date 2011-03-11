@@ -3,6 +3,15 @@ $:.push File.expand_path("../lib", __FILE__)
 require "office_autopilot/version"
 
 Gem::Specification.new do |s|
+
+  s.add_development_dependency('rspec', '~> 2.5')
+  s.add_development_dependency('webmock', '~> 1.6')
+
+  s.add_runtime_dependency('httparty', '~> 0.7')
+  s.add_runtime_dependency('builder', '~> 3.0')
+  s.add_runtime_dependency('nokogiri', '~> 1.4')
+
+
   s.name        = "office_autopilot"
   s.version     = OfficeAutopilot::VERSION
   s.platform    = Gem::Platform::RUBY
