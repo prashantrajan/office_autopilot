@@ -8,7 +8,7 @@ describe OfficeAutopilot::Client::Contacts do
     @auth_str = "Appid=#{@client.api_id}&Key=#{@client.api_key}"
   end
 
-  def parse_xml_contacts(xml)
+  def parse_contacts_xml(xml)
     contacts = []
     xml = Nokogiri::XML(xml)
     xml.css('result contact').each do |node|
@@ -33,7 +33,7 @@ describe OfficeAutopilot::Client::Contacts do
             :body => "reqType=search&data=#{escape_xml(xml_request)}&#{@auth_str}"
         ).to_return(:body => xml_response)
 
-        xml_contacts = parse_xml_contacts(xml_response)
+        xml_contacts = parse_contacts_xml(xml_response)
 
         response = @client.contacts_search(search_params)
         response.each_with_index do |contact, index|
@@ -55,7 +55,7 @@ describe OfficeAutopilot::Client::Contacts do
             :body => "reqType=search&data=#{escape_xml(xml_request)}&#{@auth_str}"
         ).to_return(:body => xml_response)
 
-        xml_contacts = parse_xml_contacts(xml_response)
+        xml_contacts = parse_contacts_xml(xml_response)
 
         response = @client.contacts_search(search_params)
         response.each_with_index do |contact, index|
@@ -66,6 +66,53 @@ describe OfficeAutopilot::Client::Contacts do
         end
       end
     end
+  end
+
+  describe "#xml_for_contact" do
+    it "returns a valid contacts xml" do
+      xml = @client.xml_for_contact([
+        { 'Contact Information' => {'First Name' => 'Bob', 'Last Name' => 'Foo', 'E-Mail' => 'b@example.com'} },
+        { 'Lead Information' => {'Contact Owner' => 'Mr Bar'} }
+      ])
+
+      xml = Nokogiri::XML(xml)
+
+      xml.at_css('contact')['id'].should be_nil
+
+      contact_info = xml.css("contact Group_Tag[name='Contact Information']")
+      contact_info.at_css("field[name='First Name']").content.should == 'Bob'
+      contact_info.at_css("field[name='Last Name']").content.should == 'Foo'
+
+      lead_info = xml.css("contact Group_Tag[name='Lead Information']")
+      lead_info.at_css("field[name='Contact Owner']").content.should == 'Mr Bar'
+    end
+
+    context "when 'id' is specified" do
+      it "returns a valid contact xml containing the contact id" do
+        xml = Nokogiri::XML(@client.xml_for_contact([], 1234))
+        xml.at_css('contact')['id'].should == '1234'
+      end
+    end
+  end
+
+  describe "#contacts_add" do
+
+    context "when success" do
+      it "does not raise an error"
+
+      context "when additional option :returns is specified" do
+        it "returns the created contact"
+      end
+
+      context "when additional option 'return_id' is specified" do
+        it "returns the created contact"
+      end
+    end
+
+    context "when failure" do
+      pending
+    end
+
   end
 
 end

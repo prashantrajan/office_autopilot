@@ -36,7 +36,7 @@ Submitting a Pull Request
 5. Add specs for your feature or bug fix.
 6. Run <tt>bundle exec rake spec</tt>. If your changes are not 100% covered, go back to step 5.
 7. Commit and push your changes.
-8. Submit a pull request. Please do not include changes to the gemspec, version, or history file. (If you want to create your own version for some reason, please do so in a separate commit.)
+8. Submit a pull request. Please do not include changes to the gemspec or version file. (If you want to create your own version for some reason, please do so in a separate commit.)
 
 Copyright
 ---------
