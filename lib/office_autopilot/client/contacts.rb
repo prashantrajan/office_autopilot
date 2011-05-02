@@ -13,13 +13,30 @@ module OfficeAutopilot
         xml = Nokogiri::XML(response)
         xml.css('result contact').each do |node|
           contacts << {
-            :id => node['id'].to_i,
-            :first_name => node.at_css("Group_Tag[name='Contact Information'] field[name='First Name']").text,
-            :last_name => node.at_css("Group_Tag[name='Contact Information'] field[name='Last Name']").text,
-            :email => node.at_css("Group_Tag[name='Contact Information'] field[name='E-Mail']").text
+              :id => node['id'].to_i,
+              :first_name => node.at_css("Group_Tag[name='Contact Information'] field[name='First Name']").text,
+              :last_name => node.at_css("Group_Tag[name='Contact Information'] field[name='Last Name']").text,
+              :email => node.at_css("Group_Tag[name='Contact Information'] field[name='E-Mail']").text
           }
         end
         contacts
+      end
+
+      def xml_for_search(options)
+        if options.is_a?(Hash)
+          options = [options]
+        end
+
+        xml = Builder::XmlMarkup.new
+        xml.search do
+          options.each do |option|
+            xml.equation do
+              xml.field option[:field]
+              xml.op option[:op]
+              xml.value option[:value]
+            end
+          end
+        end
       end
 
       def xml_for_contact(nodes, id = nil)
@@ -37,6 +54,12 @@ module OfficeAutopilot
             end
           end
         end
+      end
+
+      def parse_contacts_xml(response)
+        # TODO
+        contacts = []
+        contacts
       end
 
     end

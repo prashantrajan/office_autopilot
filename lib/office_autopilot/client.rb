@@ -1,10 +1,9 @@
 require 'builder'
 require 'nokogiri'
 
-
+require File.expand_path('../error', __FILE__)
 require File.expand_path('../request', __FILE__)
 require File.expand_path('../client/contacts', __FILE__)
-
 
 module OfficeAutopilot
   class Client
@@ -33,28 +32,18 @@ module OfficeAutopilot
       { 'Appid' => api_id, 'Key' => api_key }
     end
 
-    def xml_for_search(options)
-      if options.is_a?(Hash)
-       options = [ options ]
-      end
-
-      xml = Builder::XmlMarkup.new
-      xml.search do
-        options.each do |option|
-          xml.equation do
-            xml.field option[:field]
-            xml.op option[:op]
-            xml.value option[:value]
-          end
-        end
-      end
+    def request(method, path, options)
+      handle_response( OfficeAutopilot::Request.send(method, path, options) )
     end
 
+    def handle_response(response)
+      xml = Nokogiri::XML(response)
 
-    private
+      if xml.at_css('result').content =~ /failure/i
+        raise OfficeAutopilot::XmlError if xml.at_css('result error').content =~ /Invalid XML/i
+      end
 
-    def request(method, path, options)
-      response = OfficeAutopilot::Request.send(method, path, options)
+      response
     end
 
   end

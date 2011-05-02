@@ -22,6 +22,47 @@ describe OfficeAutopilot::Client::Contacts do
     contacts
   end
 
+  describe "#xml_for_search" do
+    # <search>
+    #   <equation>
+    #     <field>E-Mail</field>
+    #     <op>e</op>
+    #     <value>john@example.com</value>
+    #   </equation>
+    # </search>
+
+    context "searching with one field" do
+      it "returns a valid simple search data xml" do
+        field = "E-Mail"
+        op = "e"
+        value = "john@example.com"
+
+        xml = Nokogiri::XML(@client.xml_for_search(:field => field, :op => op, :value => value))
+        xml.at_css('field').content.should == field
+        xml.at_css('op').content.should == op
+        xml.at_css('value').content.should == value
+      end
+    end
+
+    context "searching with more than one field" do
+      it "returns a valid multi search data xml" do
+        search_options = [
+            {:field => 'E-Mail', :op => 'e', :value => 'foo@example.com'},
+            {:field => 'Contact Tags', :op => 'n', :value => 'bar'},
+        ]
+
+        xml = @client.xml_for_search(search_options)
+        xml = Nokogiri::XML(xml)
+        xml.css('field')[0].content.should == 'E-Mail'
+        xml.css('op')[0].content.should == 'e'
+        xml.css('value')[0].content.should == 'foo@example.com'
+        xml.css('field')[1].content.should == 'Contact Tags'
+        xml.css('op')[1].content.should == 'n'
+        xml.css('value')[1].content.should == 'bar'
+      end
+    end
+  end
+
   describe "#contacts_search" do
     context "when the results contain one user" do
       it "returns an array containing the contact" do
@@ -95,22 +136,68 @@ describe OfficeAutopilot::Client::Contacts do
     end
   end
 
+  describe "#parse_contacts_xml" do
+    context "when the results contain one user" do
+      it "returns an array containing the contact" do
+        pending
+        contacts = @client.parse_contacts_xml( test_data('contacts_search_single_response.xml') )
+
+        contacts.each do |contact|
+          contact[:id].should == 7
+#          contact[:first_name].should
+#          contact[:last_name].should
+#          contact[:email].should
+        end
+
+#        response = @client.contacts_search(search_params)
+#        response.each_with_index do |contact, index|
+#          contact[:id].should == xml_contacts[index][:id]
+#          contact[:first_name].should == xml_contacts[index][:first_name]
+#          contact[:last_name].should == xml_contacts[index][:last_name]
+#          contact[:email].should == xml_contacts[index][:email]
+#        end
+      end
+    end
+
+#    context "when the results contain more than one user" do
+#      it "returns an array containing the contacts" do
+#        search_params = {:field => 'E-Mail', :op => 'c', :value => ''}
+#        xml_request = @client.xml_for_search(search_params)
+#        xml_response = test_data('contacts_search_multiple_response.xml')
+#
+#        stub_request(:post, @contact_endpoint).with(
+#            :body => "reqType=search&data=#{escape_xml(xml_request)}&#{@auth_str}"
+#        ).to_return(:body => xml_response)
+#
+#        xml_contacts = parse_contacts_xml(xml_response)
+#
+#        response = @client.contacts_search(search_params)
+#        response.each_with_index do |contact, index|
+#          contact[:id].should == xml_contacts[index][:id]
+#          contact[:first_name].should == xml_contacts[index][:first_name]
+#          contact[:last_name].should == xml_contacts[index][:last_name]
+#          contact[:email].should == xml_contacts[index][:email]
+#        end
+#      end
+#    end
+
+  end
+
+
+
+
+
   describe "#contacts_add" do
-    context "when success" do
+    pending "build #parse_xml_contacts"
 
-      context "when additional option :return is specified" do
-        it "returns the created contact"
-      end
+    it "returns the newly created contact" do
+      response = @client.contacts_add([
+        { 'Contact Information' => {'First Name' => 'prashant', 'Last Name' => 'nadarajan', 'E-Mail' => 'prashant@example.com'} },
+        { 'Lead Information' => {'Contact Owner' => 'Don Corleone'} }
+      ])
 
-      context "when additional option 'return_id' is specified" do
-        it "returns the created contact"
-      end
+
     end
-
-    context "when failure" do
-      pending
-    end
-
   end
 
 end
