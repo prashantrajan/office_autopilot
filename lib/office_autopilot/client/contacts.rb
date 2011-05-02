@@ -7,7 +7,7 @@ module OfficeAutopilot
 
       def contacts_search(options = {})
         xml = xml_for_search(options)
-        response = self.class.post(CONTACTS_ENDPOINT, :body => {'reqType' => 'search', 'data' => xml}.merge(auth))
+        response = request(:post, CONTACTS_ENDPOINT, :body => {'reqType' => 'search', 'data' => xml}.merge(auth))
 
         contacts = []
         xml = Nokogiri::XML(response)

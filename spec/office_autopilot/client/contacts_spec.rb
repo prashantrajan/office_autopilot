@@ -96,11 +96,9 @@ describe OfficeAutopilot::Client::Contacts do
   end
 
   describe "#contacts_add" do
-
     context "when success" do
-      it "does not raise an error"
 
-      context "when additional option :returns is specified" do
+      context "when additional option :return is specified" do
         it "returns the created contact"
       end
 

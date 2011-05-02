@@ -28,16 +28,6 @@ describe OfficeAutopilot::Client do
     end
   end
 
-  describe "HTTParty" do
-    it "sets the base uri to the Office Autopilot API host" do
-      OfficeAutopilot::Client.base_uri.should == 'http://api.moon-ray.com'
-    end
-
-    it "set the format to :xml" do
-      OfficeAutopilot::Client.format.should == :plain
-    end
-  end
-
   describe "#xml_for_search" do
     before do
       @client = OfficeAutopilot::Client.new(:api_id => 'xx', :api_key => 'yy')

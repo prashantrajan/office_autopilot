@@ -1,21 +1,15 @@
-require 'httparty'
 require 'builder'
 require 'nokogiri'
 
 
+require File.expand_path('../request', __FILE__)
 require File.expand_path('../client/contacts', __FILE__)
 
 
 module OfficeAutopilot
   class Client
 
-    include HTTParty
-
-    include OfficeAutopilot::Client::Contacts
-
-    base_uri 'http://api.moon-ray.com'
-    format :plain
-
+    include Contacts
 
     def initialize(options)
       @api = {
@@ -54,6 +48,13 @@ module OfficeAutopilot
           end
         end
       end
+    end
+
+
+    private
+
+    def request(method, path, options)
+      response = OfficeAutopilot::Request.send(method, path, options)
     end
 
   end
