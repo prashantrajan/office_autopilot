@@ -11,11 +11,22 @@ Usage Examples
     require "rubygems"
     require "office_autopilot"
 
-    oap = OfficeAutopilot::Client.new(:api_id => 'xxx', :api_key => 'yyy')
+    client = OfficeAutopilot::Client.new(:api_id => 'xxx', :api_key => 'yyy')
 
     # Search Contacts
-    puts oap.contacts_search(:field => 'E-Mail', :op => 'e', :value => 'jimbo@example.com')
-      => [ { :id => 7, :first_name => 'Jimbo', :last_name => 'Watunusi', :email => 'jimbo@example.com' } ]
+    puts client.contacts_search(:field => 'E-Mail', :op => 'e', :value => 'prashant@example.com')
+       # results truncated for brevity but ALL fields (including custom fields) are returned
+       => [{"id"=>"7",
+             "Contact Information"=>{"First Name"=>"testing", "Last Name"=>"testing", "E-Mail"=>"prashant@example.com"},
+            "Lead Information"=>{"Contact Owner"=>"XXX", "First Referrer"=>"", "Last Referrer"=>""},
+            "Sequences and Tags"=>{"Sequences"=>"*/*", "Contact Tags"=>""},
+            "Purchase History"=>{}
+          }]
+
+    # Add Contact
+    puts client.contacts_add({ 'Contact Information' => {'First Name' => 'Turtle', 'Last Name' => 'Jones', 'E-Mail' => 'mrturtles@example.com'} })
+       # results truncated for brevity
+       => {"id"=>"24", "Contact Information"=>{"First Name"=>"Turtle", "Last Name"=>"Jones", "E-Mail"=>"mrturtles@example.com"}}
 
 Documentation
 -------------
@@ -25,7 +36,6 @@ Todo
 ----
 
 * support ALL API calls
-* allow returning all possible contact details instead of the current subset
 
 Submitting a Pull Request
 -------------------------

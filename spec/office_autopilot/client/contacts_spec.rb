@@ -8,20 +8,6 @@ describe OfficeAutopilot::Client::Contacts do
     @auth_str = "Appid=#{@client.api_id}&Key=#{@client.api_key}"
   end
 
-  def parse_contacts_xml(xml)
-    contacts = []
-    xml = Nokogiri::XML(xml)
-    xml.css('result contact').each do |node|
-      contacts << {
-          :id => node['id'].to_i,
-          :first_name => node.at_css("Group_Tag[name='Contact Information'] field[name='First Name']").text,
-          :last_name => node.at_css("Group_Tag[name='Contact Information'] field[name='Last Name']").text,
-          :email => node.at_css("Group_Tag[name='Contact Information'] field[name='E-Mail']").text
-      }
-    end
-    contacts
-  end
-
   describe "#xml_for_search" do
     # <search>
     #   <equation>
@@ -47,8 +33,8 @@ describe OfficeAutopilot::Client::Contacts do
     context "searching with more than one field" do
       it "returns a valid multi search data xml" do
         search_options = [
-            {:field => 'E-Mail', :op => 'e', :value => 'foo@example.com'},
-            {:field => 'Contact Tags', :op => 'n', :value => 'bar'},
+          {:field => 'E-Mail', :op => 'e', :value => 'foo@example.com'},
+          {:field => 'Contact Tags', :op => 'n', :value => 'bar'},
         ]
 
         xml = @client.xml_for_search(search_options)
@@ -56,6 +42,7 @@ describe OfficeAutopilot::Client::Contacts do
         xml.css('field')[0].content.should == 'E-Mail'
         xml.css('op')[0].content.should == 'e'
         xml.css('value')[0].content.should == 'foo@example.com'
+
         xml.css('field')[1].content.should == 'Contact Tags'
         xml.css('op')[1].content.should == 'n'
         xml.css('value')[1].content.should == 'bar'
@@ -64,58 +51,30 @@ describe OfficeAutopilot::Client::Contacts do
   end
 
   describe "#contacts_search" do
-    context "when the results contain one user" do
-      it "returns an array containing the contact" do
-        search_params = {:field => 'E-Mail', :op => 'e', :value => 'prashant@example.com'}
-        xml_request = @client.xml_for_search(search_params)
-        xml_response = test_data('contacts_search_single_response.xml')
+    it "returns the matched contacts" do
+      search_options = {:field => 'E-Mail', :op => 'e', :value => 'prashant@example.com'}
+      search_xml = @client.xml_for_search(search_options)
+      contacts_xml = test_data('contacts_search_single_response.xml')
 
-        stub_request(:post, @contact_endpoint).with(
-            :body => "reqType=search&data=#{escape_xml(xml_request)}&#{@auth_str}"
-        ).to_return(:body => xml_response)
+      request_body = "reqType=search&data=#{escape_xml(search_xml)}&#{@auth_str}"
+      stub_request(:post, @contact_endpoint).with(:body => request_body).to_return(:body => contacts_xml)
 
-        xml_contacts = parse_contacts_xml(xml_response)
-
-        response = @client.contacts_search(search_params)
-        response.each_with_index do |contact, index|
-          contact[:id].should == xml_contacts[index][:id]
-          contact[:first_name].should == xml_contacts[index][:first_name]
-          contact[:last_name].should == xml_contacts[index][:last_name]
-          contact[:email].should == xml_contacts[index][:email]
-        end
-      end
-    end
-
-    context "when the results contain more than one user" do
-      it "returns an array containing the contacts" do
-        search_params = {:field => 'E-Mail', :op => 'c', :value => ''}
-        xml_request = @client.xml_for_search(search_params)
-        xml_response = test_data('contacts_search_multiple_response.xml')
-
-        stub_request(:post, @contact_endpoint).with(
-            :body => "reqType=search&data=#{escape_xml(xml_request)}&#{@auth_str}"
-        ).to_return(:body => xml_response)
-
-        xml_contacts = parse_contacts_xml(xml_response)
-
-        response = @client.contacts_search(search_params)
-        response.each_with_index do |contact, index|
-          contact[:id].should == xml_contacts[index][:id]
-          contact[:first_name].should == xml_contacts[index][:first_name]
-          contact[:last_name].should == xml_contacts[index][:last_name]
-          contact[:email].should == xml_contacts[index][:email]
-        end
-      end
+      contacts = @client.contacts_search(search_options)
+      WebMock.should have_requested(:post, @contact_endpoint).with(:body => request_body)
+      contacts.should == @client.parse_contacts_xml(contacts_xml)
     end
   end
 
   describe "#xml_for_contact" do
-    it "returns a valid contacts xml" do
-      xml = @client.xml_for_contact([
-        { 'Contact Information' => {'First Name' => 'Bob', 'Last Name' => 'Foo', 'E-Mail' => 'b@example.com'} },
-        { 'Lead Information' => {'Contact Owner' => 'Mr Bar'} }
-      ])
+    before do
+      @contact_options = {
+        'Contact Information' => {'First Name' => 'Bob', 'Last Name' => 'Foo', 'E-Mail' => 'b@example.com'},
+        'Lead Information' => {'Contact Owner' => 'Mr Bar'}
+      }
+    end
 
+    it "returns a valid contacts xml" do
+      xml = @client.xml_for_contact(@contact_options)
       xml = Nokogiri::XML(xml)
 
       xml.at_css('contact')['id'].should be_nil
@@ -130,73 +89,75 @@ describe OfficeAutopilot::Client::Contacts do
 
     context "when 'id' is specified" do
       it "returns a valid contact xml containing the contact id" do
-        xml = Nokogiri::XML(@client.xml_for_contact([], 1234))
+        @contact_options.merge!('id' => '1234')
+        xml = Nokogiri::XML( @client.xml_for_contact(@contact_options) )
+
         xml.at_css('contact')['id'].should == '1234'
+        contact_info = xml.css("contact Group_Tag[name='Contact Information']")
+        contact_info.at_css("field[name='First Name']").content.should == 'Bob'
+        contact_info.at_css("field[name='Last Name']").content.should == 'Foo'
+
+        lead_info = xml.css("contact Group_Tag[name='Lead Information']")
+        lead_info.at_css("field[name='Contact Owner']").content.should == 'Mr Bar'
       end
     end
   end
 
   describe "#parse_contacts_xml" do
-    context "when the results contain one user" do
+    context "when the results contain one contact" do
       it "returns an array containing the contact" do
-        pending
         contacts = @client.parse_contacts_xml( test_data('contacts_search_single_response.xml') )
 
-        contacts.each do |contact|
-          contact[:id].should == 7
-#          contact[:first_name].should
-#          contact[:last_name].should
-#          contact[:email].should
-        end
+        contacts.size.should == 1
 
-#        response = @client.contacts_search(search_params)
-#        response.each_with_index do |contact, index|
-#          contact[:id].should == xml_contacts[index][:id]
-#          contact[:first_name].should == xml_contacts[index][:first_name]
-#          contact[:last_name].should == xml_contacts[index][:last_name]
-#          contact[:email].should == xml_contacts[index][:email]
-#        end
+        contacts.each do |contact|
+          contact['id'].should == '7'
+          contact['Contact Information']['First Name'].should == 'prashant'
+          contact['Contact Information']['Last Name'].should == 'nadarajan'
+          contact['Contact Information']['E-Mail'].should == 'prashant@example.com'
+          contact['Lead Information']['Contact Owner'].should == 'Don Corleone'
+        end
       end
     end
 
-#    context "when the results contain more than one user" do
-#      it "returns an array containing the contacts" do
-#        search_params = {:field => 'E-Mail', :op => 'c', :value => ''}
-#        xml_request = @client.xml_for_search(search_params)
-#        xml_response = test_data('contacts_search_multiple_response.xml')
-#
-#        stub_request(:post, @contact_endpoint).with(
-#            :body => "reqType=search&data=#{escape_xml(xml_request)}&#{@auth_str}"
-#        ).to_return(:body => xml_response)
-#
-#        xml_contacts = parse_contacts_xml(xml_response)
-#
-#        response = @client.contacts_search(search_params)
-#        response.each_with_index do |contact, index|
-#          contact[:id].should == xml_contacts[index][:id]
-#          contact[:first_name].should == xml_contacts[index][:first_name]
-#          contact[:last_name].should == xml_contacts[index][:last_name]
-#          contact[:email].should == xml_contacts[index][:email]
-#        end
-#      end
-#    end
+    context "when the results contain more than one contact" do
+      it "returns an array containing the contacts" do
+        contacts = @client.parse_contacts_xml(test_data('contacts_search_multiple_response.xml'))
 
+        contacts.size.should == 3
+
+        contacts[0]['id'].should == '8'
+        contacts[0]['Contact Information']['E-Mail'].should == 'bobby@example.com'
+        contacts[0]['Lead Information']['Contact Owner'].should == 'Jimbo Watunusi'
+
+        contacts[1]['id'].should == '5'
+        contacts[1]['Contact Information']['E-Mail'].should == 'ali@example.com'
+        contacts[1]['Lead Information']['Contact Owner'].should == 'Jimbo Watunusi'
+      end
+    end
   end
 
-
-
-
-
   describe "#contacts_add" do
-    pending "build #parse_xml_contacts"
-
     it "returns the newly created contact" do
-      response = @client.contacts_add([
-        { 'Contact Information' => {'First Name' => 'prashant', 'Last Name' => 'nadarajan', 'E-Mail' => 'prashant@example.com'} },
-        { 'Lead Information' => {'Contact Owner' => 'Don Corleone'} }
-      ])
+      contact_options = {
+        'Contact Information' => {'First Name' => 'prashant', 'Last Name' => 'nadarajan', 'E-Mail' => 'prashant@example.com'},
+        'Lead Information' => {'Contact Owner' => 'Don Corleone'}
+      }
 
+      request_contact_xml = @client.xml_for_contact(contact_options)
+      response_contact_xml = test_data('contacts_add_response.xml')
 
+      request_body = "reqType=add&return_id=1&data=#{escape_xml(request_contact_xml)}&#{@auth_str}"
+      stub_request(:post, @contact_endpoint).with(:body => request_body).to_return(:body => response_contact_xml)
+
+      contact = @client.contacts_add(contact_options)
+      WebMock.should have_requested(:post, @contact_endpoint).with(:body => request_body)
+
+      contact['id'].should == '7'
+      contact['Contact Information']['First Name'].should == 'prashant'
+      contact['Contact Information']['Last Name'].should == 'nadarajan'
+      contact['Contact Information']['E-Mail'].should == 'prashant@example.com'
+      contact['Lead Information']['Contact Owner'].should == 'Don Corleone'
     end
   end
 

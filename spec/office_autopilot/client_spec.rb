@@ -9,19 +9,19 @@ describe OfficeAutopilot::Client do
   end
 
   describe "#new" do
-    it "initializes the API credentials" do
+    it "initializes with the given API credentials" do
       @client.api_id.should == @api_id
       @client.api_key.should == @api_key
       @client.auth.should == { 'Appid' => @api_id, 'Key' => @api_key }
     end
 
-    it "raises an ArgumentError when api_id is not provided" do
+    it "raises an ArgumentError when :api_id is not provided" do
       expect {
         OfficeAutopilot::Client.new(:api_key => 'foo')
       }.to raise_error(ArgumentError)
     end
 
-    it "raises an ArgumentError when api_key is not provided" do
+    it "raises an ArgumentError when :api_key is not provided" do
       expect {
         OfficeAutopilot::Client.new(:api_id => 'foo')
       }.to raise_error(ArgumentError)
@@ -29,7 +29,9 @@ describe OfficeAutopilot::Client do
   end
 
   describe "#request" do
-    pending "can't seem to stub out OfficeAutopilot::Request.post"
+    it "makes a HTTP request" do
+       pending "can't seem to stub out OfficeAutopilot::Request.post"
+    end
   end
 
   describe "#handle_response" do
