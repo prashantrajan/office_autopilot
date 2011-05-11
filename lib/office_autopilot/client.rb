@@ -33,6 +33,7 @@ module OfficeAutopilot
     end
 
     def request(method, path, options)
+      options[:body].merge!(auth)
       handle_response( OfficeAutopilot::Request.send(method, path, options) )
     end
 
