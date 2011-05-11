@@ -6,14 +6,19 @@ module OfficeAutopilot
 
       def contacts_search(options)
         xml = xml_for_search(options)
-        response = request(:post, CONTACTS_ENDPOINT, :body => {'reqType' => 'search', 'data' => xml}.merge(auth))
+        response = request(:post, CONTACTS_ENDPOINT, :body => {'reqType' => 'search', 'data' => xml})
         parse_contacts_xml(response)
       end
 
       def contacts_add(options)
         xml = xml_for_contact(options)
-        response = request(:post, CONTACTS_ENDPOINT, :body => {'reqType' => 'add', 'return_id' => '1', 'data' => xml}.merge(auth))
+        response = request(:post, CONTACTS_ENDPOINT, :body => {'reqType' => 'add', 'return_id' => '1', 'data' => xml})
         parse_contacts_xml(response)[0]
+      end
+
+      def contacts_pull_tags
+        response = request(:post, CONTACTS_ENDPOINT, :body => {'reqType' => 'pull_tag'})
+        parse_pull_tags_xml(response)
       end
 
       def xml_for_search(options)
@@ -70,6 +75,18 @@ module OfficeAutopilot
           contacts << contact
         end
         contacts
+      end
+      
+      private
+
+      def parse_pull_tags_xml(response)
+        result = {}
+        xml = Nokogiri::XML(response)
+        xml.css("result tag").each do |node|
+          id = node['id']
+          result[id] = node.content
+        end
+        result
       end
 
     end

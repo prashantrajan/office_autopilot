@@ -161,4 +161,17 @@ describe OfficeAutopilot::Client::Contacts do
     end
   end
 
+  describe "#contacts_pull_tags" do
+    it "returns all the contact tag names and ids" do
+      pull_tags_xml = test_data('contacts_pull_tags.xml')
+      request_body = "reqType=pull_tag&#{@auth_str}"
+      stub_request(:post, @contact_endpoint).with(:body => request_body).to_return(:body => pull_tags_xml)
+
+      tags = @client.contacts_pull_tags
+      tags['3'].should == 'newleads'
+      tags['4'].should == 'old_leads'
+      tags['5'].should == 'legacy Leads'
+    end
+  end
+
 end
