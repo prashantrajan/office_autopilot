@@ -8,6 +8,19 @@ describe OfficeAutopilot::Client::Contacts do
     @auth_str = "Appid=#{@client.api_id}&Key=#{@client.api_key}"
   end
 
+  def request_body(req_type, options = {})
+    options = { 'reqType' => req_type }.merge(options)
+
+    query = ''
+    options.each do |key, value|
+      if key == "data"
+        value = escape_xml(value)
+      end
+      query << "#{key}=#{value}&"
+    end
+    query << @auth_str
+  end
+
   describe "#xml_for_search" do
     # <search>
     #   <equation>
@@ -55,8 +68,8 @@ describe OfficeAutopilot::Client::Contacts do
       search_options = {:field => 'E-Mail', :op => 'e', :value => 'prashant@example.com'}
       search_xml = @client.send(:xml_for_search, search_options)
       contacts_xml = test_data('contacts_search_single_response.xml')
-
-      request_body = "reqType=search&data=#{escape_xml(search_xml)}&#{@auth_str}"
+      
+      request_body = request_body('search', 'data' => search_xml)
       stub_request(:post, @contact_endpoint).with(:body => request_body).to_return(:body => contacts_xml)
 
       contacts = @client.contacts_search(search_options)
@@ -147,7 +160,7 @@ describe OfficeAutopilot::Client::Contacts do
       request_contact_xml = @client.send(:xml_for_contact, contact_options)
       response_contact_xml = test_data('contacts_add_response.xml')
 
-      request_body = "reqType=add&return_id=1&data=#{escape_xml(request_contact_xml)}&#{@auth_str}"
+      request_body = request_body('add', 'return_id' => '1', 'data' => request_contact_xml)
       stub_request(:post, @contact_endpoint).with(:body => request_body).to_return(:body => response_contact_xml)
 
       contact = @client.contacts_add(contact_options)
@@ -164,8 +177,7 @@ describe OfficeAutopilot::Client::Contacts do
   describe "#contacts_pull_tags" do
     it "returns all the contact tag names and ids" do
       pull_tags_xml = test_data('contacts_pull_tags.xml')
-      request_body = "reqType=pull_tag&#{@auth_str}"
-      stub_request(:post, @contact_endpoint).with(:body => request_body).to_return(:body => pull_tags_xml)
+      stub_request(:post, @contact_endpoint).with(:body => request_body('pull_tag')).to_return(:body => pull_tags_xml)
 
       tags = @client.contacts_pull_tags
       tags['3'].should == 'newleads'
