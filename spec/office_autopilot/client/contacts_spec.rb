@@ -23,7 +23,7 @@ describe OfficeAutopilot::Client::Contacts do
         op = "e"
         value = "john@example.com"
 
-        xml = Nokogiri::XML(@client.xml_for_search(:field => field, :op => op, :value => value))
+        xml = Nokogiri::XML(@client.send(:xml_for_search, { :field => field, :op => op, :value => value }) )
         xml.at_css('field').content.should == field
         xml.at_css('op').content.should == op
         xml.at_css('value').content.should == value
@@ -37,7 +37,7 @@ describe OfficeAutopilot::Client::Contacts do
           {:field => 'Contact Tags', :op => 'n', :value => 'bar'},
         ]
 
-        xml = @client.xml_for_search(search_options)
+        xml = @client.send(:xml_for_search, search_options)
         xml = Nokogiri::XML(xml)
         xml.css('field')[0].content.should == 'E-Mail'
         xml.css('op')[0].content.should == 'e'
@@ -53,7 +53,7 @@ describe OfficeAutopilot::Client::Contacts do
   describe "#contacts_search" do
     it "returns the matched contacts" do
       search_options = {:field => 'E-Mail', :op => 'e', :value => 'prashant@example.com'}
-      search_xml = @client.xml_for_search(search_options)
+      search_xml = @client.send(:xml_for_search, search_options)
       contacts_xml = test_data('contacts_search_single_response.xml')
 
       request_body = "reqType=search&data=#{escape_xml(search_xml)}&#{@auth_str}"
@@ -61,7 +61,7 @@ describe OfficeAutopilot::Client::Contacts do
 
       contacts = @client.contacts_search(search_options)
       WebMock.should have_requested(:post, @contact_endpoint).with(:body => request_body)
-      contacts.should == @client.parse_contacts_xml(contacts_xml)
+      contacts.should == @client.send(:parse_contacts_xml, contacts_xml)
     end
   end
 
@@ -74,7 +74,7 @@ describe OfficeAutopilot::Client::Contacts do
     end
 
     it "returns a valid contacts xml" do
-      xml = @client.xml_for_contact(@contact_options)
+      xml = @client.send(:xml_for_contact, @contact_options)
       xml = Nokogiri::XML(xml)
 
       xml.at_css('contact')['id'].should be_nil
@@ -90,7 +90,7 @@ describe OfficeAutopilot::Client::Contacts do
     context "when 'id' is specified" do
       it "returns a valid contact xml containing the contact id" do
         @contact_options.merge!('id' => '1234')
-        xml = Nokogiri::XML( @client.xml_for_contact(@contact_options) )
+        xml = Nokogiri::XML( @client.send(:xml_for_contact, @contact_options) )
 
         xml.at_css('contact')['id'].should == '1234'
         contact_info = xml.css("contact Group_Tag[name='Contact Information']")
@@ -106,7 +106,7 @@ describe OfficeAutopilot::Client::Contacts do
   describe "#parse_contacts_xml" do
     context "when the results contain one contact" do
       it "returns an array containing the contact" do
-        contacts = @client.parse_contacts_xml( test_data('contacts_search_single_response.xml') )
+        contacts = @client.send(:parse_contacts_xml, test_data('contacts_search_single_response.xml'))
 
         contacts.size.should == 1
 
@@ -122,7 +122,7 @@ describe OfficeAutopilot::Client::Contacts do
 
     context "when the results contain more than one contact" do
       it "returns an array containing the contacts" do
-        contacts = @client.parse_contacts_xml(test_data('contacts_search_multiple_response.xml'))
+        contacts = @client.send(:parse_contacts_xml, test_data('contacts_search_multiple_response.xml'))
 
         contacts.size.should == 3
 
@@ -144,7 +144,7 @@ describe OfficeAutopilot::Client::Contacts do
         'Lead Information' => {'Contact Owner' => 'Don Corleone'}
       }
 
-      request_contact_xml = @client.xml_for_contact(contact_options)
+      request_contact_xml = @client.send(:xml_for_contact, contact_options)
       response_contact_xml = test_data('contacts_add_response.xml')
 
       request_body = "reqType=add&return_id=1&data=#{escape_xml(request_contact_xml)}&#{@auth_str}"
