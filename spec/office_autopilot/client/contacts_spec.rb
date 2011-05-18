@@ -174,16 +174,66 @@ describe OfficeAutopilot::Client::Contacts do
     end
   end
 
-  describe "#contacts_pull_tags" do
+  describe "#contacts_pull_tag" do
     it "returns all the contact tag names and ids" do
       pull_tags_xml = test_data('contacts_pull_tags.xml')
       stub_request(:post, @contact_endpoint).with(:body => request_body('pull_tag')).to_return(:body => pull_tags_xml)
 
-      tags = @client.contacts_pull_tags
+      tags = @client.contacts_pull_tag
       tags['3'].should == 'newleads'
       tags['4'].should == 'old_leads'
       tags['5'].should == 'legacy Leads'
     end
   end
 
+  describe "#contacts_fetch_sequences" do
+    it "returns all the available contact sequences" do
+      xml = test_data('contacts_fetch_sequences.xml')
+      stub_request(:post, @contact_endpoint).with(:body => request_body('fetch_sequences')).to_return(:body => xml)
+      sequences = @client.contacts_fetch_sequences
+      sequences['3'].should == 'APPOINTMENT REMINDER'
+      sequences['4'].should == 'foo sequence'
+    end
+  end
+
+  describe "#contacts_key" do
+    it "returns information on the contact data structure" do
+      xml = test_data('contacts_key_type.xml')
+      stub_request(:post, @contact_endpoint).with(:body => request_body('key')).to_return(:body => xml)
+
+      result = @client.contacts_key
+      result["Contact Information"]["editable"].should be_false
+      result["Contact Information"]["fields"]["Cell Phone"]["editable"].should be_false
+      result["Contact Information"]["fields"]["Cell Phone"]["type"].should == "phone"
+      result["Contact Information"]["fields"]["Birthday"]["type"].should == "fulldate"
+
+      result["Lead Information"]["fields"]["Lead Source"]["type"].should == "tdrop"
+      result["Lead Information"]["fields"]["Lead Source"]["options"][0].should == "Adwords"
+      result["Lead Information"]["fields"]["Lead Source"]["options"][4].should == "Newspaper Ad"
+
+      result["Sequences and Tags"]["fields"]["Contact Tags"]["type"].should == "list"
+      result["Sequences and Tags"]["fields"]["Contact Tags"]["list"]["5"].should == "legacy Leads"
+
+      result["PrecisoPro"]["editable"].should be_true
+      result["PrecisoPro"]["fields"]["Lead Status"]["editable"].should be_true
+    end
+  end
+
+  describe "#contacts_fetch" do
+    context "when all the ids exists" do
+      it "returns the contacts" do
+        xml_response = test_data('contacts_search_multiple_response.xml')
+        xml_request = "<contact_id>8</contact_id><contact_id>5</contact_id><contact_id>7</contact_id>"
+        stub_request(:post, @contact_endpoint).with(:body => request_body('fetch', 'data' => xml_request )).to_return(:body => xml_response)
+
+        results = @client.contacts_fetch([8, 5, 7])
+        results.size.should == 3
+        results[0]["Contact Information"].should_not be_nil
+      end
+    end
+
+    context "when some of the ids don't exist"
+
+    context "when all the ids don't exist"
+  end
 end
