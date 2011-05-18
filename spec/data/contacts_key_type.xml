@@ -1,0 +1,99 @@
+<result>
+  <contact id="" bulk_mail="">
+    <Group_Tag name="Contact Information">
+      <field name="First Name" type="text"/>
+      <field name="Last Name" type="text"/>
+      <field name="E-Mail" type="text"/>
+      <field name="Home Phone" type="phone"/>
+      <field name="Title" type="text"/>
+      <field name="Office Phone" type="text"/>
+      <field name="Cell Phone" type="phone"/>
+      <field name="Fax" type="text"/>
+      <field name="Address" type="text"/>
+      <field name="Company" type="text"/>
+      <field name="Address 2" type="text"/>
+      <field name="City" type="text"/>
+      <field name="State" type="state"/>
+      <field name="Zip Code" type="text"/>
+      <field name="Website " type="text"/>
+      <field name="Country" type="country"/>
+      <field name="Birthday" type="fulldate"/>
+    </Group_Tag>
+    <Group_Tag name="Lead Information">
+      <field name="Contact Owner" type=""/>
+      <field name="First Referrer" type=""/>
+      <field name="Last Referrer" type=""/>
+      <field name="Lead Source" type="tdrop">
+        <option>Adwords</option>
+        <option>Tradeshow</option>
+        <option>Business Card</option>
+        <option>Referral</option>
+        <option>Newspaper Ad</option>
+      </field>
+      <field name="Campaign" type="tdrop">
+        <option>Free Trial</option>
+        <option>20% Off</option>
+        <option>Mother's Day</option>
+      </field>
+      <field name="Ad" type="tdrop">
+        <option>Ad Version 1</option>
+        <option>Ad Version 2</option>
+      </field>
+      <field name="Media" type="tdrop">
+        <option>PPC</option>
+        <option>Direct Mail</option>
+        <option>Banner</option>
+        <option>Newspaper</option>
+      </field>
+    </Group_Tag>
+    <Group_Tag name="Sequences and Tags">
+      <field name="Sequences" type="sequence"/>
+      <field name="Contact Tags" type="list">
+        <list id="3">newleads</list>
+        <list id="4">old_leads</list>
+        <list id="5">legacy Leads</list>
+      </field>
+    </Group_Tag>
+    <Group_Tag name="PrecisoPro" editable="1">
+      <field name="Lead Status" type="tdrop" editable="1">
+        <option>INB-APP</option>
+        <option>OUTB-APP</option>
+        <option>REJECT-APP</option>
+        <option>ASSIGNED</option>
+        <option>NEW</option>
+        <option>CUSTOMER</option>
+        <option>NO SHOW</option>
+      </field>
+      <field name="Appointment For" type="text" editable="1"/>
+      <field name="Appointment Date" type="text" editable="1"/>
+      <field name="Appointment Time" type="text" editable="1"/>
+      <field name="Treatment" type="text" editable="1"/>
+      <field name="Contact Preference" type="tdrop" editable="1">
+        <option>Phone</option>
+        <option>Email</option>
+      </field>
+      <field name="Dentist Id" type="text" editable="1"/>
+      <field name="Dentist Name" type="text" editable="1"/>
+      <field name="Dentist Address" type="text" editable="1"/>
+      <field name="Dentist Email" type="text" editable="1"/>
+      <field name="Dentist Telephone" type="text" editable="1"/>
+      <field name="Expected CLV" type="text" editable="1"/>
+      <field name="Already Spent" type="text" editable="1"/>
+      <field name="Notes" type="longtext" editable="1"/>
+    </Group_Tag>
+    <Group_Tag name="Affiliate Data" editable="1">
+      <field name="Affiliate Program" type="aff_program"/>
+      <field name="Number of Sales" type="numeric"/>
+      <field name="$ Sales" type="price"/>
+      <field name="Affiliate Paypal" type="text"/>
+    </Group_Tag>
+    <Group_Tag name="Credit Card" editable="1">
+      <field name="Card Type" type="ndrop"/>
+      <field name="Card Expiration Month" type="tdrop"/>
+      <field name="Charge Result" type="tdrop"/>
+      <field name="Card Expiration Year" type="numeric"/>
+      <field name="Card Number (Last 4)" type="numeric"/>
+      <field name="Payment Center Link" type="Payment Center Link"/>
+    </Group_Tag>
+  </contact>
+</result>
