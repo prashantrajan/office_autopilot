@@ -30,7 +30,7 @@ Usage Examples
 Documentation
 -------------
 
-###### Currently supported API methods:
+#### Currently supported API methods:
 
 **Contacts:**
 
