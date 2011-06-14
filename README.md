@@ -25,11 +25,28 @@ Usage Examples
 
     # Add Contact
     puts client.contacts_add({ 'Contact Information' => {'First Name' => 'Turtle', 'Last Name' => 'Jones', 'E-Mail' => 'mrturtles@example.com'} })
-       # results truncated for brevity
        => {"id"=>"24", "Contact Information"=>{"First Name"=>"Turtle", "Last Name"=>"Jones", "E-Mail"=>"mrturtles@example.com"}}
 
 Documentation
 -------------
+
+###### Currently supported API methods:
+
+**Contacts:**
+
+* contacts_search
+
+* contacts_add
+
+* contacts_pull_tag
+
+* contacts_fetch_sequences
+
+* contacts_key
+
+* contacts_fetch
+
+
 [OfficeAutopilot API Docs](http://wiki.sendpepper.com/w/page/19528683/API-Documentation)
 
 Todo
