@@ -47,7 +47,7 @@ Documentation
 * contacts_fetch
 
 
-[OfficeAutopilot API Docs](http://wiki.sendpepper.com/w/page/19528683/API-Documentation)
+[**OfficeAutopilot API Docs**](http://wiki.sendpepper.com/w/page/19528683/API-Documentation)
 
 Todo
 ----
