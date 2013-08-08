@@ -2,6 +2,11 @@ The OfficeAutopilot Ruby Gem
 ============================
 A Ruby wrapper for the OfficeAutopilot API
 
+Maintenance Note
+----------------
+
+This library is no longer being maintained. Please fork :-)
+
 Installation
 ------------
     gem install office_autopilot
